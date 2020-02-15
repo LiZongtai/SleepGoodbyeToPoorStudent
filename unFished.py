@@ -5,7 +5,7 @@ import random as rd
 n = 20
 year = 50
 
-f = [[-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+f1 = [[-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 [-1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0],
 [0,0,0,0,0,0,0,1,1,1,1,9,1,1,1,1,1,0,0,0],
 [0,0,0,0,0,0,0,1,5,1,1,5,1,1,1,7,1,0,0,0],
@@ -26,7 +26,7 @@ f = [[-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 [1,1,1,0,0,0,0,0,-1,-1,0,-1,-1,-1,0,0,-1,-1,-1,-1],
 [0,0,0,0,0,0,0,-1,0,0,0,-1,-1,-1,0,-1,-1,-1,-1,-1]]
 
-f2=[[-1,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0],
+f=[[-1,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0],
 [-1,0,0,0,0,0,0,1,1,3,3,3,1,2,1,1,1,0,0,0],
 [1,1,0,1,1,1,1,1,2,3,5,8,2,3,2,3,1,1,0,0],
 [2,1,1,1,3,1,1,2,1,1,3,2,3,1,2,3,2,1,0,0],
@@ -128,7 +128,6 @@ for i in range(year):
                     f[x][y] = f[x][y] - int(dr*t[x][y])
                     if(f[x][y]<0):
                         f[x][y]=0
-                        # 怎么就-1了？？？
                     
                 fsum = 0
                 for nx in range(x-1,x+1):
@@ -138,15 +137,17 @@ for i in range(year):
                         # I am not Columbus 
                             fsum = fsum + f[nx][ny]
                             # Hi,bro
+                        else:
+                            fsum=fsum+1
                             
                 if(fsum > starve_bar):
                 # Food, food! Ahhhhhhhh RIP
                     for nx in range(x-1,x+1):
                         for ny in range(y-1,y+1):
                         # You wanna live? Over my dead body!
-                            if(f[nx][ny] >0 ):
-                            # Continents are immortally, sad 
-                                f[nx][ny] = f[nx][ny] - 1
+                            if(f[nx][ny] >2 ):
+                            # Only big fish hava food problem 
+                                f[nx][ny] = f[nx][ny] - rd.randint(0,3)
                                 # Go down with me!
                                 
                 elif(fsum < stuffed_bar and fsum > 4):
@@ -154,7 +155,7 @@ for i in range(year):
                     for nx in range(x-1,x+1):
                         for ny in range(y-1,y+1):
                         # Wanna share some food, haha.
-                            if(f[nx][ny] != -1 and f[nx][ny] != 9 and rd.random() > 0.3):
+                            if(f[nx][ny] != -1 and f[nx][ny] != 9 and rd.random() > br):
                             # Continents can't eat. Fat fish can't eat.
                                 f[nx][ny] = f[nx][ny] + 1
                                 # Be my guest
@@ -177,7 +178,7 @@ for i in range(year):
             # Let us go through the map
             if(f[x][y] >5):
                 # not Continent
-                f[x][y] = f[x][y] - rd.randint(0,1)
+                f[x][y] = f[x][y] - rd.randint(0,2)
                 # 
 
 
