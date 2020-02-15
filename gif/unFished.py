@@ -1,12 +1,11 @@
 from PIL import Image
 import numpy as np
 import random as rd
-import imageio
 
 n = 20
 year = 50
 
-f = [[-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+f1 = [[-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 [-1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0],
 [0,0,0,0,0,0,0,1,1,1,1,9,1,1,1,1,1,0,0,0],
 [0,0,0,0,0,0,0,1,5,1,1,5,1,1,1,7,1,0,0,0],
@@ -27,7 +26,7 @@ f = [[-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 [1,1,1,0,0,0,0,0,-1,-1,0,-1,-1,-1,0,0,-1,-1,-1,-1],
 [0,0,0,0,0,0,0,-1,0,0,0,-1,-1,-1,0,-1,-1,-1,-1,-1]]
 
-f2=[[-1,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0],
+f=[[-1,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0],
 [-1,0,0,0,0,0,0,1,1,3,3,3,1,2,1,1,1,0,0,0],
 [1,1,0,1,1,1,1,1,2,3,5,8,2,3,2,3,1,1,0,0],
 [2,1,1,1,3,1,1,2,1,1,3,2,3,1,2,3,2,1,0,0],
@@ -70,7 +69,7 @@ t = [[-1,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,2,3,3,3],
 [12,12,12,12,12,12,12,-1,8,7,8,-1,-1,-1,9,-1,-1,-1,-1,-1]]
 # temp
 
-dr = 10
+dr = 0.2
 #death rate large - die more
 
 br = 0.3
@@ -84,7 +83,33 @@ stuffed_bar = 7
 
 color_table = [(25,25,112),(0,0,255),(0,180,255),(0,250,154),(0,255,0),(173,255,47),(255,255,0),(255,165,0),(255,69,0),(255,0,0)]
 
-def visual(data,cur_y):
+
+def visual_gif(data,cur_y):
+
+    img = Image.new('RGB', (1000,1000), (255, 255, 255))
+    img_array = np.array(img)
+    
+    block_size = int(1000/n)
+    width = 1000
+    height = 1000
+
+    max_width = width + block_size
+    max_height = height + block_size
+    
+    for x in range(0, max_width - block_size , block_size):
+        for y in range(0, max_height - block_size , block_size):
+            for px in range(x,x + block_size):
+                for py in range(y,y + block_size):
+                    if(data[ int(x/block_size) ][ int(y/block_size) ] == -1):
+                        img_array[px, py] = (96,96,96)
+                    else:
+                        img_array[px, py] = color_table[ data[ int(x/block_size) ][ int(y/block_size) ]  ]
+
+    img = Image.fromarray(img_array)
+    img.save('img/'+str(cur_y)+'.jpg')
+
+
+def visual(data):
 
     img = Image.new('RGB', (1000,1000), (255, 255, 255))
     img_array = np.array(img)
@@ -108,31 +133,6 @@ def visual(data,cur_y):
     img = Image.fromarray(img_array)
     img.show()
     
-def visual_gif(data,cur_y):
-
-    img = Image.new('RGB', (1000,1000), (255, 255, 255))
-    img_array = np.array(img)
-    
-    block_size = int(1000/n)
-    width = 1000
-    height = 1000
-
-    max_width = width + block_size
-    max_height = height + block_size
-    
-    for x in range(0, max_width - block_size , block_size):
-        for y in range(0, max_height - block_size , block_size):
-            for px in range(x,x + block_size):
-                for py in range(y,y + block_size):
-                    if(data[ int(x/block_size) ][ int(y/block_size) ] == -1):
-                        img_array[px, py] = (96,96,96)
-                    else:
-                        img_array[px, py] = color_table[ data[ int(x/block_size) ][ int(y/block_size) ]  ]
-
-    img = Image.fromarray(img_array)
-    #img.show()
-    img.save('img/'+ str(cur_y) +'.jpg')
-    
 #visual(f)
 
 for i in range(year):
@@ -149,9 +149,11 @@ for i in range(year):
                     if(f[x][y]>9):
                         f[x][y]=9
                     
-                if(rd.random()*t[x][y] < dr and f[x][y]!= 0):
+                if( f[x][y]>0):
                 # RIP: my fish
-                    f[x][y] = f[x][y] - 1
+                    f[x][y] = f[x][y] - int(dr*t[x][y])
+                    if(f[x][y]<0):
+                        f[x][y]=0
                     
                 fsum = 0
                 for nx in range(x-1,x+1):
@@ -161,15 +163,17 @@ for i in range(year):
                         # I am not Columbus 
                             fsum = fsum + f[nx][ny]
                             # Hi,bro
+                        else:
+                            fsum=fsum+1
                             
                 if(fsum > starve_bar):
                 # Food, food! Ahhhhhhhh RIP
                     for nx in range(x-1,x+1):
                         for ny in range(y-1,y+1):
                         # You wanna live? Over my dead body!
-                            if(f[nx][ny] != -1 ):
-                            # Continents are immortal, sad 
-                                f[nx][ny] = f[nx][ny] - 1
+                            if(f[nx][ny] >2 ):
+                            # Only big fish hava food problem 
+                                f[nx][ny] = f[nx][ny] - rd.randint(0,3)
                                 # Go down with me!
                                 
                 elif(fsum < stuffed_bar and fsum > 4):
@@ -177,7 +181,7 @@ for i in range(year):
                     for nx in range(x-1,x+1):
                         for ny in range(y-1,y+1):
                         # Wanna share some food, haha.
-                            if(f[nx][ny] != -1 and f[nx][ny] != 9 and rd.random() > 0.3):
+                            if(f[nx][ny] != -1 and f[nx][ny] != 9 and rd.random() > br):
                             # Continents can't eat. Fat fish can't eat.
                                 f[nx][ny] = f[nx][ny] + 1
                                 # Be my guest
@@ -192,22 +196,22 @@ for i in range(year):
             # Let us go through the map
             if(t[x][y] != -1):
                 # not Continent
-                t[x][y] = t[x][y] + 0.2
+                t[x][y] = t[x][y] + 0.1
                 # Global warming coef need to be small
-                
     # Scottish great catch
     for x in range(n):
-         for y in range(n):
-             # Let us go through the map
-             if(f[x][y] >5):
-                 # not Continent
-                 f[x][y] = f[x][y] - 1
+        for y in range(n):
+            # Let us go through the map
+            if(f[x][y] >5):
+                # not Continent
+                f[x][y] = f[x][y] - rd.randint(0,2)
                 # 
+    visual_gif(f,i)
 
-    #visual_gif(f,i)
-    # img/i.jpg
+
+#visual(f)
          
-visual(f)
+            
 '''
 for x in range(n):
     for y in range(n):
@@ -215,4 +219,3 @@ for x in range(n):
             t[x][y] = 9
 visual(t)
 '''
-print("done")
