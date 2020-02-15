@@ -69,7 +69,7 @@ t = [[-1,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,2,3,3,3],
 [12,12,12,12,12,12,12,-1,8,7,8,-1,-1,-1,9,-1,-1,-1,-1,-1]]
 # temp
 
-dr = 10
+dr = 0.2
 #death rate large - die more
 
 br = 0.3
@@ -123,9 +123,12 @@ for i in range(year):
                     if(f[x][y]>9):
                         f[x][y]=9
                     
-                if(rd.random()*t[x][y] < dr and f[x][y]!= 0):
+                if( f[x][y]>0):
                 # RIP: my fish
-                    f[x][y] = f[x][y] - 1
+                    f[x][y] = f[x][y] - int(dr*t[x][y])
+                    if(f[x][y]<0):
+                        f[x][y]=0
+                        # 怎么就-1了？？？
                     
                 fsum = 0
                 for nx in range(x-1,x+1):
@@ -141,7 +144,7 @@ for i in range(year):
                     for nx in range(x-1,x+1):
                         for ny in range(y-1,y+1):
                         # You wanna live? Over my dead body!
-                            if(f[nx][ny] != -1 ):
+                            if(f[nx][ny] >0 ):
                             # Continents are immortally, sad 
                                 f[nx][ny] = f[nx][ny] - 1
                                 # Go down with me!
@@ -166,15 +169,15 @@ for i in range(year):
             # Let us go through the map
             if(t[x][y] != -1):
                 # not Continent
-                t[x][y] = t[x][y] + 0.2
+                t[x][y] = t[x][y] + 0.1
                 # Global warming coef need to be small
-    # # Scottish great catch
-    # for x in range(n):
-    #     for y in range(n):
-    #         # Let us go through the map
-    #         if(f[x][y] >5):
-    #             # not Continent
-    #             f[x][y] = f[x][y] - 1
+    # Scottish great catch
+    for x in range(n):
+        for y in range(n):
+            # Let us go through the map
+            if(f[x][y] >5):
+                # not Continent
+                f[x][y] = f[x][y] - rd.randint(0,1)
                 # 
 
 
