@@ -6,7 +6,8 @@ from scipy.optimize import minimize
 
 # profit
 # profit=FP*harvest-distance/VS*OH*OP-VP-OC
-
+# trips times per year
+TT=70
 # maximum of fish price when frash - £/tons
 MP=500
 # function of fish price - £
@@ -38,7 +39,7 @@ def DC(dp):
 
 # object function - maximize profits
 def objective(x):
-    return -(70*(FP(x[0])*x[1]*CL-(2*x[2]/VS)*OH(x[1])*OP))*(1-FX)+VP+OC
+    return -(TT*(FP(x[0])*x[1]*CL-(2*x[2]/VS)*OH(x[1])*OP))*(1-FX)+VP+OC
 # constraints
 def constraint1(x):
     return 48-x[0]
