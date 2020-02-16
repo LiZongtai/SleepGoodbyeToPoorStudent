@@ -2,18 +2,19 @@ from PIL import Image
 import numpy as np
 import random as rd
 import math
-import fishData as dt
+import pandas as pd
+import data as dt
 
 # suitable temperature
 SUIT_TEMP=8
 # temperature coefficient dicides the temperature sensibility
-TEMP_COEF=2.2
+TEMP_COEF=2.3
 n=100
-h=[]
-h_l=[]
-f=[]
-f_l=[]
-m=[]
+h=np.ones((100,100))
+h_l=np.ones((100,100))
+f=dt.f_sb
+f_l=dt.f_sb
+m=dt.mp
 t=[]
 t_l=[]
 color_table = [(25,25,112),(0,0,255),(0,180,255),(0,250,154),(0,255,0),(173,255,47),(255,255,0),(255,165,0),(255,69,0),(255,0,0)]
@@ -59,9 +60,9 @@ def hsi():
                 acc_pop=(POPULATION-POPULATION_L)/POPULATION_L
 
                 if(OFFSHORE!=0):
-                    index_offs=(OFFSHORE/80)**(1/100)
+                    index_offs=(OFFSHORE/80)**(1/40)
                 elif(OFFSHORE==0):
-                    index_offs=0.9
+                    index_offs=0.85
                 # if((POPULATION<(CONGESTION/9))
                 index_pop=math.exp(-1*acc_pop)
                 index_temp=TEMP_COEF/((abs(TEMPERATURE-SUIT_TEMP)+SUIT_TEMP)/SUIT_TEMP+1)
@@ -75,7 +76,6 @@ def congestion(x,y):
             if(m[nx][ny] != -1):
                 fsum = fsum + f[nx][ny]
     return fsum
-
 
 
 #visual(f)
@@ -104,6 +104,8 @@ def init():
                 f_l[x][y]=round(f[x][y]*(1+0.04*rd.randint(-2,2)))
             elif(m[x][y]==-1):
                 f[x][y]=-1
+    hsi()
 
-init()
-fishCAMain(50)
+# init()
+# fishCAMain(50)
+
