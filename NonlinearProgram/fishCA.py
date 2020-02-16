@@ -39,8 +39,8 @@ def visual(data,n):
     
 #visual(f)
 def fishCAMain(f,t,year,tcoef):
-    ft=np.array(f)
-    n=ft.shape[0]
+    # myf=np.array(f)
+    n=20
     for i in range(year):
         for x in range(n):
             for y in range(n):
