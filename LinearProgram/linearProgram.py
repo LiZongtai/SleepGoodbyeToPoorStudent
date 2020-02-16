@@ -27,6 +27,8 @@ FX=0.4
 VS=20
 # catching effciency - tons/h
 CE=400/24
+# catching losses - %
+CL=0.85
 # function of catching time - h
 def CT(cq,dp):
     return 2*dp/VS+cq/CE 
@@ -34,12 +36,9 @@ def CT(cq,dp):
 def DC(dp):
     return 0.007*dp*dp+1.855*dp+73.52
 
-
-
-
 # object function - maximize profits
 def objective(x):
-    return -(70*(FP(x[0])*x[1]-(2*x[2]/VS)*OH(x[1])*OP))*(1-FX)+VP+OC
+    return -(70*(FP(x[0])*x[1]*CL-(2*x[2]/VS)*OH(x[1])*OP))*(1-FX)+VP+OC
 # constraints
 def constraint1(x):
     return 48-x[0]
