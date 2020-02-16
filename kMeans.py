@@ -135,21 +135,38 @@ def getDistance(lat1, lng1, lat2, lng2):
     s = 2 * math.asin(math.sqrt(math.pow(math.sin(a/2), 2) + math.cos(radLat1) * math.cos(radLat2) * math.pow(math.sin(b/2), 2)))
     s = s * EARTH_REDIUS
     return s
-
+# select centroids - value maximum
+def selectCent(cents,k):
+    max_v=0
+    max_i=0
+    for i in range(k):
+        if(cents[i][2]>=max_v):
+            max_v=cents[i][2]
+            max_i=i
+    oneCent=[cents[max_i][0],cents[max_i][1],cents[max_i][2]]
+    return oneCent
 
 k = 1
 centroids1, clusterData1 = kmeans(trans2coordinate(f_bg), k)
 centroids2, clusterData2 = kmeans(trans2coordinate(f_ed), k)
-print("k =",k)
+oneCent1=selectCent(centroids1,k)
+oneCent2=selectCent(centroids2,k)
+bg2ed=getDistance(oneCent1[0],oneCent1[1],oneCent2[0],oneCent2[1])
+bg2p=getDistance(oneCent1[0],oneCent1[1],54,0.5)
+ed2p=getDistance(oneCent2[0],oneCent2[1],54,0.5)
+percent=oneCent2[2]/oneCent1[2]
+pos_bg=[centroids1[0][0],centroids1[0][1]]
+pos_ed=[centroids2[0][0],centroids2[0][1]]
 if np.isnan(centroids1).any() and np.isnan(centroids2).any():
     print('Error')
 else:
+    print("k =",k)
     print(centroids1)
     print(centroids2)
-
-pos_bg=[centroids1[0][0],centroids1[0][1]]
-pos_ed=[centroids2[0][0],centroids2[0][1]]
-print("Distance =",getDistance(centroids1[0][0],centroids1[0][1],centroids2[0][0],centroids2[0][1]))
+    print("Distance_bg2ed =",bg2ed)
+    print("Distance_bg2port =",bg2p)
+    print("Distance_ed2port =",ed2p)
+    print("harvest percent =",percent)
 
 # showCluster(f, k, centroids, clusterData)
 # print(trans2coordinate(f))
