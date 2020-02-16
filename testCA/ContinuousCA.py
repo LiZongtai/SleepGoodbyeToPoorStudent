@@ -4,7 +4,7 @@ import random as rd
 import math
 import pandas as pd
 import data as dt
-
+heat = np.loadtxt("testCA/heatData.txt")
 # suitable temperature
 SUIT_TEMP=8
 # temperature coefficient dicides the temperature sensibility
