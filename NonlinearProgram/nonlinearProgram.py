@@ -8,7 +8,7 @@ from scipy.optimize import minimize
 # profit=FP*harvest-distance/VS*OH*OP-VP-OC
 
 # maximum of fish price when frash - £/tons
-MP=400
+MP=500
 # function of fish price - £
 def FP(t):
     return (1-t/72)*MP
@@ -28,7 +28,7 @@ VS=20
 # catching effciency - tons/h
 CE=400/24
 # catching losses - %
-CL=0.85
+CL=0.8
 # function of catching time - h
 def CT(cq,dp):
     return 2*dp/VS+cq/CE 
