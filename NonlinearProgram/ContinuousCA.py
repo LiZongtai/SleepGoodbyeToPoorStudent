@@ -6,6 +6,8 @@ import fishData as dt
 
 # suitable temperature
 SUIT_TEMP=8
+# temperature coefficient dicides the temperature sensibility
+TEMP_COEF=2.2
 n=100
 h=[]
 h_l=[]
@@ -57,12 +59,12 @@ def hsi():
                 acc_pop=(POPULATION-POPULATION_L)/POPULATION_L
 
                 if(OFFSHORE!=0):
-                    index_offs=(OFFSHORE/50)**(1/45)
+                    index_offs=(OFFSHORE/80)**(1/100)
                 elif(OFFSHORE==0):
                     index_offs=0.9
                 # if((POPULATION<(CONGESTION/9))
                 index_pop=math.exp(-1*acc_pop)
-                index_temp=2/((abs(TEMPERATURE-SUIT_TEMP)+SUIT_TEMP)/SUIT_TEMP+1)
+                index_temp=TEMP_COEF/((abs(TEMPERATURE-SUIT_TEMP)+SUIT_TEMP)/SUIT_TEMP+1)
                 h[x][y]=index_pop*index_temp*index_offs
     return
     
@@ -75,8 +77,7 @@ def congestion(x,y):
     return fsum
 
 
-def survivalRate(x,y):
-    return h[x][y]-0.5
+
 #visual(f)
 def fishCAMain(year):
     # myf=np.array(f)
@@ -86,7 +87,7 @@ def fishCAMain(year):
             for y in range(n):
                 f_l[x][y]=f[x][y]
                 if (m[x][y]!=-1): 
-                    f[x][y]=round(f[x][y]*(1+survivalRate(x,y)))
+                    f[x][y]=round(f[x][y]*h[x][y])
         hsi()
 
 # def color():
