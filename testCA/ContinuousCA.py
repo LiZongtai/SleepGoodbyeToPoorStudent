@@ -16,7 +16,7 @@ def trans2matrix(data):
         x=data[i][0]
         y=data[i][1]
         if(x>=64.5):
-            print(x)
+            # print(x)
             xn=99
         else:
             xn=int((x-la_bg)/0.5)
@@ -24,13 +24,16 @@ def trans2matrix(data):
             yn=99
         else:
             yn=round((y-lo_bg)/0.3)
+        if(v>1000):
+            v=1000
         res[xn][yn]=v
     return res
+
 heat = np.loadtxt("testCA/heatData.txt")
 # suitable temperature
-SUIT_TEMP=7
+SUIT_TEMP=5
 # temperature coefficient dicides the temperature sensibility
-TEMP_COEF=2.3
+TEMP_COEF=0.05
 n=100
 h=np.ones((100,100))
 h_l=np.ones((100,100))
@@ -42,12 +45,14 @@ t=dt.t
 color_table = [(25,25,112),(0,0,255),(0,180,255),(0,250,154),(0,255,0),(173,255,47),(255,255,0),(255,165,0),(255,69,0),(255,0,0)]
 
 def fishGenerator():
+    coef=20
     flag=np.zeros((100,100))
     for x in range(n):
         for y in range(n):
+
             if(f[x][y]>0):
-                for nx in range(x-25,x+25):
-                    for ny in range(y-25,y+25):
+                for nx in range(x-coef,x+coef):
+                    for ny in range(y-coef,y+coef):
                         # print(nx,ny)
                         if(nx<0 or nx>99 or ny<0 or ny>99 or flag[nx][ny]==-1):
                             pass
@@ -56,9 +61,10 @@ def fishGenerator():
                             if(nx==x and ny==y):
                                 None
                             else:
-                                if(m[nx][ny]!=-1):
-                                    f[nx][ny]=int(f[nx][ny]+(1/(diff))*f[x][y])
-                            flag[x][y]=-1
+                                if(m[nx][ny]!=-1 and f[nx][ny]<1000):
+                                    # print([nx,ny])
+                                    f[nx][ny]=int(f[nx][ny]+(1/diff*diff)*f[x][y])
+                                    flag[nx][ny]=-1
 
 
 def visual(data,n):
@@ -97,9 +103,12 @@ def hsi():
                 TEMPERATURE=t[x][y]
                 # TEMPERATURE_L=t_l[x][y]
                 # CONGESTION=congestion(x,y)
-
+                t[x][y]=t[x][y]+2.5/50
                 # population varible
-                acc_pop=(POPULATION-POPULATION_L)/POPULATION_L
+                if(POPULATION!=0):
+                    acc_pop=(POPULATION-POPULATION_L)/POPULATION
+                else:
+                    acc_pop=0
 
                 if(OFFSHORE!=0):
                     index_offs=(OFFSHORE/80)**(1/40)
@@ -107,7 +116,11 @@ def hsi():
                     index_offs=0.85
                 # if((POPULATION<(CONGESTION/9))
                 index_pop=math.exp(-1*acc_pop)
-                index_temp=TEMP_COEF/((abs(TEMPERATURE-SUIT_TEMP)+SUIT_TEMP)/SUIT_TEMP+1)
+                diff=TEMPERATURE-SUIT_TEMP
+                if(diff<3):
+                    index_temp=1+abs(diff)*TEMP_COEF
+                else:
+                    index_temp=1-abs(diff)*TEMP_COEF
                 h[x][y]=index_pop*index_temp*index_offs
     return
     
@@ -123,7 +136,7 @@ def congestion(x,y):
 #visual(f)
 def fishCAMain(year):
     # myf=np.array(f)
-    n=20
+    n=100
     for i in range(year):
         for x in range(n):
             for y in range(n):
@@ -144,15 +157,22 @@ def fishCAMain(year):
 #                 max_v=f[x][y]
           
 def init():
+    # hsi()
     fishGenerator()
     for x in range(n):
         for y in range(n):
             if(m[x][y]!=-1):
                 f_l[x][y]=round(f[x][y]*(1+rd.random()/10*(-1)**(rd.randint(-1,0))))
-            elif(m[x][y]==-1):
+            else:
                 f[x][y]=-1
                 h[x][y]=-1
-    hsi()
+    # hsi()
+mat_path = 'hdata.mat'
+io.savemat(mat_path, {'name': h})
+mat_path = 'mdata.mat'
+io.savemat(mat_path, {'name': m})
+mat_path = 'mfldata.mat'
+io.savemat(mat_path, {'name': f_l})
 
 k = 8
 init()
